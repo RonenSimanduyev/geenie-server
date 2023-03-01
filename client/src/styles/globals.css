@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-bg;
+}
+
+.shadowStuff {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.lin {
+  background: linear-gradient(
+    180deg,
+    rgba(249, 222, 170, 0.5) 0%,
+    #ffd37f 100%
+  );
+}
