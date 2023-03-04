@@ -18,7 +18,10 @@ data: list = []
 wanted_pages: int = 50
 
 def setENV(URL):
-    if len(URL) >20:
+    if len(URL) <90:
+        asin: str = URL.split('/')[-1]
+        URL="https://www.amazon.com/dp/"+asin
+    elif len(URL) >90:
         asin: str = URL.split('/')[-2]
         URL="https://www.amazon.com/dp/"+asin
     else :
@@ -37,7 +40,7 @@ def setENV(URL):
 
     soup = BeautifulSoup(response.content, "html.parser")
 
-    see_all_reviews_link = soup.find("a", {"data-hook": "see-all-reviews-link-foot"})["href"]
+    see_all_reviews_link = soup.find("a", {"data-hook":"see-all-reviews-link-foot"})["href"]
 
     URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
 
