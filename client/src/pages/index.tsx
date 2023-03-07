@@ -6,19 +6,33 @@ import { Elipse, Spinner } from "~/components";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
+  const [question1, setQuestion1] = useState('')
+  const [question2, setQuestion2] = useState('')
+
   const [URL, setURL] = useState("");
   const [GPTRespone, setGPTRespone] = useState("")
   const getInfo = api.info.fetch.useMutation();
 
   const sendLink = async () => {
-    const response = await fetch('http://127.0.0.1:8000/fullScript', {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ URL })
-    });
+    try {
+      const response = await fetch('http://127.0.0.1:8000/fullScript', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ question1, URL, question2 })
+      });
+      console.log(GPTRespone, 'before')
 
-    const data = await response.json();
-    setGPTRespone(data)
+      const data = await response.json();
+      console.log(data, 'data after')
+
+      setGPTRespone(data);
+      console.log(GPTRespone, 'after')
+
+    } catch (error) {
+      console.error('An error occurred:', error);
+      // Handle the error as appropriate (e.g. show an error message to the user)
+    }
+    console.log(GPTRespone)
 
   };
 
@@ -45,7 +59,29 @@ const Home: NextPage = () => {
             understand consumer sentiment and compare your product to
             competitors.
           </p>
-          <div className="shadowStuff mt-6 flex w-[813px] items-center gap-2 rounded-md bg-white p-2.5">
+
+
+          <div className="shadowStuff flex w-[813px] items-center gap-2 rounded-md bg-white p-2.5">
+
+            <input
+              className="w- w-[80%] rounded-xl border border-grayish p-2.5 font-Montserrat text-blackish placeholder:text-grayish focus:outline-none"
+              placeholder="your first part if the questoin"
+              value={question1}
+              onChange={(e) => setQuestion1(e.currentTarget.value)}
+            />
+          </div>
+
+          <div className="shadowStuff  flex w-[813px] items-center gap-2 rounded-md bg-white p-2.5">
+
+            <input
+              className="w- w-[80%] rounded-xl border border-grayish p-2.5 font-Montserrat text-blackish placeholder:text-grayish focus:outline-none"
+              placeholder="your seconde part if the questoin"
+              value={question2}
+              onChange={(e) => setQuestion2(e.currentTarget.value)}
+            />
+          </div>
+          <div className="shadowStuff flex w-[813px] items-center gap-2 rounded-md bg-white p-2.5">
+
             <input
               className="w- w-[80%] rounded-xl border border-grayish p-2.5 font-Montserrat text-blackish placeholder:text-grayish focus:outline-none"
               placeholder="Paste your Amazon URL or URL here"
@@ -62,7 +98,10 @@ const Home: NextPage = () => {
               Run Report {getInfo.isLoading ? <Spinner sm /> : null}
             </button>
           </div>
-          {GPTRespone}
+          <div className="flex m-10">
+            {GPTRespone}
+
+          </div>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2">
           {getInfo.data ? (
