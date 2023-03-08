@@ -21,13 +21,15 @@ def setENV(URL):
     if len(URL) <90:
         asin: str = URL.split('/')[-1]
         URL="https://www.amazon.com/dp/"+asin
+        print(URL)
     elif len(URL) >90:
         asin: str = URL.split('/')[-2]
         URL="https://www.amazon.com/dp/"+asin
+        print(URL)
     else :
         asin=URL
         URL="https://www.amazon.com/dp/"+asin
-        print(asin)
+        print(URL)
     try:
         response = requests.get(URL, headers=HEADERS)
 
@@ -39,9 +41,14 @@ def setENV(URL):
             raise Exception(f"Both attempts to make a request failed: {e}")
 
     soup = BeautifulSoup(response.content, "html.parser")
-
-    see_all_reviews_link = soup.find("a", {"data-hook":"see-all-reviews-link-foot"})["href"]
-
+    try:
+        see_all_reviews_link = soup.find("a", {"data-hook":"see-all-reviews-link-foot"})["href"]
+        print('by data hook')
+    
+    except:
+        
+        see_all_reviews_link = soup.find('a', {'class': 'a-link-emphasis a-text-bold'})['href']
+        print('by class')
     URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
 
     response = requests.get(URL_ALL_REVIEWS, headers=HEADERS)
