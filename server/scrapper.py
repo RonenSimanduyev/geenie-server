@@ -45,13 +45,16 @@ def setENV(URL):
     try:
         
         see_all_reviews_link = soup.find("a", {"data-hook":"see-all-reviews-link-foot"})["href"]
+        URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
+
         print('by data hook')
     
     except:
         
+        URL_ALL_REVIEWS="https://www.amazon.com/product-reviews/" + asin + "/reviewerType=all_reviews"  
+
         see_all_reviews_link = soup.find('a', {'class': 'a-link-emphasis a-text-bold'})['href']
         print('by class')
-    URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
 
     response = requests.get(URL_ALL_REVIEWS, headers=HEADERS)
 
