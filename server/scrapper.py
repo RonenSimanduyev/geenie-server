@@ -4,7 +4,8 @@ import requests
 import pandas as pd
 import re
 import math
-import time
+from time import time
+from time import sleep
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
@@ -40,18 +41,17 @@ def setENV(URL):
             raise Exception(f"Both attempts to make a request failed: {e}")
 
     soup = BeautifulSoup(response.content, "html.parser")
-    print('sleep')
-    time.sleep(5)
-    print('wokeup')
+    
     try:
         
         see_all_reviews_link = soup.find("a", {"data-hook":"see-all-reviews-link-foot"})["href"]
-        URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
         print('by data hook')
     
     except:
-        URL_ALL_REVIEWS=  "https://www.amazon.com/product-reviews/"+asin+"/reviewerType=all_reviews"  
+        
+        see_all_reviews_link = soup.find('a', {'class': 'a-link-emphasis a-text-bold'})['href']
         print('by class')
+    URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
 
     response = requests.get(URL_ALL_REVIEWS, headers=HEADERS)
 
