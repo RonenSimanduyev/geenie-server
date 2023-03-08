@@ -41,20 +41,18 @@ def setENV(URL):
             raise Exception(f"Both attempts to make a request failed: {e}")
 
     soup = BeautifulSoup(response.content, "html.parser")
-    
+    time 
     try:
         
         see_all_reviews_link = soup.find("a", {"data-hook":"see-all-reviews-link-foot"})["href"]
-        URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
-
         print('by data hook')
     
     except:
         
-        URL_ALL_REVIEWS="https://www.amazon.com/product-reviews/" + asin + "/reviewerType=all_reviews"  
-
         see_all_reviews_link = soup.find('a', {'class': 'a-link-emphasis a-text-bold'})['href']
         print('by class')
+        
+    URL_ALL_REVIEWS = "https://www.amazon.com" + see_all_reviews_link
 
     response = requests.get(URL_ALL_REVIEWS, headers=HEADERS)
 
@@ -79,7 +77,7 @@ def scrape_reviews(page_url: str, headers: dict) -> list:
         profile_name = review.find("span", {"class": "a-profile-name"}).get_text()
         title_elem = review.find("a", {"data-hook": "review-title"})
         title = title_elem.get_text().strip() if title_elem else ""
-        body = review.find("span", {"data-hook": "review-body"}).get_text().strip()
+        body = review.find("span", {"data-hook": "review-body"}).get_text().strip()+'##'
         stars_elem = review.find("i", {"data-hook": "review-star-rating"})
         stars = float(stars_elem.span.get_text().split()[0]) if stars_elem and stars_elem.span else None
         time=review.find("span", {"data-hook": "review-date"}).get_text().strip()

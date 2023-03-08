@@ -1,6 +1,6 @@
 import openai
 import os
-API_Key = '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'
+API_Key = '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'
 amazon_TOS_doc='https://docs.google.com/document/d/11XvCw-akyBSwKWoMSb5abif-dT7KGGGRUSV39Hc1JXc/edit?usp=sharing'
 openai.api_key=API_Key
 
@@ -23,3 +23,27 @@ def sumReviews(question1:str ,reviews: str ,question2: str) -> str:
     )
     asnwer= completion['choices'][0]['message']['content'].strip()
     return asnwer
+
+def askGPT(values_list: list) -> str:
+    print('asked about list')
+    completion=openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-0301",
+        messages=[{"role":"user","content": f"As Amazon seller, we want to analyze the customer reviews and search for sentiment in each review, so we could learn where we should put our focus on to improve, product-wise.Create a report of sentiments for the list below. Each review is separated by ##Example:'One the weakest products I’ve ever bought the smallest bump shift movement will make it fall and disassemble.'Extracted sentiment:(Quality: Negative, Value: Negative){values_list}"}]
+                )
+    asnwer= completion['choices'][0]['message']['content'].strip()
+    return asnwer
+
+
+def askGPTaboutAll(allReviews: list) -> str:
+    print('asking about all')
+    completion=openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-0301",
+        messages=[{"role":"user","content": f"Please give me a list of the topic's sentiments and their hit rate %, divided by negative and positive {allReviews}"}]
+    )
+    asnwer= completion['choices'][0]['message']['content'].strip()
+    return asnwer
+
+
+
+
+

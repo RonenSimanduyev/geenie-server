@@ -6,8 +6,9 @@ import time
 from AmazonReviewsAnalysis import reviewAnalysis
 from scrapper import runScrapperScript
 from uploadToSheets import uploadToSheets,remove_scrapper_result
-from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc
+from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc,askGPTaboutAll,askGPT
 import asyncio
+import pandas as pd
 
 
 app = FastAPI()
@@ -65,42 +66,6 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request):
     return answer
 
 
-# @@ async run currently not wirking @@
-
-# @app.post('/fullScript')
-# async def scrape_and_drive_and_ask_about_reviews(request: Request):
-#     answer = []
-#     data = await request.json()
-#     # getting the first part of the question
-#     question1 = data.get('question1')
-#     # getting the url or asin of the product
-#     url = data.get('URL')
-#     # getting the second part of the question 
-#     question2 = data.get('question2')
-    
-#     # activate a function that scrape the reviews of the product and upload it to the google drive
-#     drive_url, filename = await scrape_and_drive(url)
-    
-#     # Define a task for running the review analysis
-#     review_task = asyncio.create_task(reviewAnalysis(filename))
-    
-#     # Run the GPT analysis concurrently with the review analysis
-#     analysis2_task = asyncio.create_task(ask_about_reviews(question1, drive_url, question2))
-
-#     # Wait for both tasks to finish
-#     analysis1, analysis2 = await asyncio.gather(review_task, analysis2_task)
-    
-#     # Add the results to the answer list
-#     answer.append(analysis1)
-#     answer.append(analysis2)
-    
-#     # remove the scraper result from the root folder
-#     remove_scraper_result(filename)
-    
-#     # return the answer to the front
-#     return answer
-
-
 @app.post('/askBasedOnTOS')
 async def ask_based_on_tos(request: Request):
     t: float = time()
@@ -112,4 +77,23 @@ async def ask_based_on_tos(request: Request):
     return response, f'that took {s} seconds'
 
 
+@app.post('/askGPT')
+async def ask_based_on_tos():
+    print('started')
+    
+    allReviews= []
+    values_list = []
+    df = pd.read_csv('B00R3Z49G6.csv')
+    for i in range(1, len(df),20):
+        # Extract the values from the fourth column for the current batch of rows
+        values = df.iloc[i:i+20, 3].values.tolist()
+        # Add the values to the list
+        values_list.extend(values)
+        response = askGPT(values_list)
+        allReviews.append(response)
+        values_list=[]
+        values=[]
+        print(i)
+    response = askGPTaboutAll(allReviews)
+    return response
 
