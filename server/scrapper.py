@@ -51,7 +51,7 @@ def setENV(URL):
     
     except:
         URL_ALL_REVIEWS=  "https://www.amazon.com/product-reviews/"+asin+"/reviewerType=all_reviews"  
-            print('by class')
+        print('by class')
 
     response = requests.get(URL_ALL_REVIEWS, headers=HEADERS)
 
