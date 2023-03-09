@@ -1,6 +1,6 @@
 import openai
 import os
-API_Key = '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'
+API_Key = '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'
 amazon_TOS_doc='https://docs.google.com/document/d/11XvCw-akyBSwKWoMSb5abif-dT7KGGGRUSV39Hc1JXc/edit?usp=sharing'
 openai.api_key=API_Key
 
