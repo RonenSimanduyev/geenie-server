@@ -29,7 +29,7 @@ warnings.warn("this will not show")
 t=time()
 
 def reviewAnalysis(fileName):
-
+    
     df = pd.read_csv(fileName)
 
 
@@ -142,15 +142,6 @@ def reviewAnalysis(fileName):
     # calculating # of appearances of topics in reviews,
     # and finding opinions relevant to topics
 
-    # In[18]:
-
-
-
-
-
-    # In[19]:
-
-
     #algorithm uses tf_idf to find what reviewers liked about the product and what reviewers disliked about it
 
     # tf–idf is a numerical statistic that is intended to reflect how important a word is to a document in a corpus. 
@@ -169,14 +160,8 @@ def reviewAnalysis(fileName):
         return avg
 
 
-    # In[20]:
-
-
     tf_idf_res = tf_idf(df['Body'],2,3)
     tf_idf_res
-
-
-    # In[21]:
 
 
     tf_idf_res.sort_values(by=["score"],ascending=False)
@@ -185,14 +170,8 @@ def reviewAnalysis(fileName):
     tf_idf_res.head(50)
 
 
-    # In[22]:
-
 
     tf_idf_res = tf_idf_res[tf_idf_res.score > 0.0009]
-
-
-    # In[23]:
-
 
     tf_idf_res = tf_idf_res.reset_index()
     tf_idf_res = tf_idf_res.drop(["index"],axis=1)
@@ -200,8 +179,6 @@ def reviewAnalysis(fileName):
 
 
     # filter similar topics
-
-    # In[24]:
 
 
     #similar uses sequence matcher to find how similar strings are to each other
@@ -211,15 +188,7 @@ def reviewAnalysis(fileName):
     def similar(a, b):
         return SequenceMatcher(None, a, b).ratio()
 
-
-    # In[25]:
-
-
     topics_list = list(tf_idf_res.word)
-    topics_list
-
-
-    # In[26]:
 
 
     for i in range(0, len(tf_idf_res)):
@@ -231,29 +200,13 @@ def reviewAnalysis(fileName):
         except:
             continue
 
-
-    # In[27]:
-
-
     tf_idf_res = tf_idf_res.reset_index()
     tf_idf_res = tf_idf_res.drop(["index"],axis=1)
 
 
-    # In[28]:
-
-
-    #calculating # of reviews topic appeared in
-
-
-    # In[29]:
-
-
     reviews = list(df.Body)
 
-
-
     tf_idf_res['appearances']=0
-
 
     for i in range(0, len(tf_idf_res)):
         try:
@@ -266,8 +219,6 @@ def reviewAnalysis(fileName):
         except:
             continue
 
-
-
     tf_idf_res = tf_idf_res.sort_values(by=["appearances"],ascending=False)
 
 
@@ -276,16 +227,10 @@ def reviewAnalysis(fileName):
 
     nltk.download('opinion_lexicon')
 
-
-
-
     from nltk.corpus import opinion_lexicon
 
 
     cons_words = opinion_lexicon.negative()
-
-
-
 
     pros_words = opinion_lexicon.positive()
 
@@ -313,8 +258,6 @@ def reviewAnalysis(fileName):
 
 
     tf_idf_res = tf_idf_res[tf_idf_res.opinion != ""]
-
-
 
     # step 2. sentiment analysis
     # using sentiment analysis on opinion column to classify if the opinion of the reviewers on the topic was positive, negative or neutral

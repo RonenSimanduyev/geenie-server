@@ -47,8 +47,8 @@ def uploadToSheets(asin: str):
     return f'Shareable file URL: {file_url}'
 
 
-def remove_scrapper_result(asin: str):
-    csv_file_path = asin
+def remove_scrapper_result(fileName):
+    csv_file_path = fileName
 
     # Close the file and delete it from local directory
     with open(csv_file_path, 'r') as f:
