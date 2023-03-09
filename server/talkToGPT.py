@@ -1,6 +1,6 @@
 import openai
 import os
-API_Key = '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'
+API_Key = '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'
 amazon_TOS_doc='https://docs.google.com/document/d/11XvCw-akyBSwKWoMSb5abif-dT7KGGGRUSV39Hc1JXc/edit?usp=sharing'
 openai.api_key=API_Key
 
@@ -16,13 +16,18 @@ def askAboutTOS(question: str, regulations: str) -> str:
 
 
 
-def sumReviews(question1:str ,reviews: str ,question2: str) -> str:
-    completion=openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0301",
-        messages=[{"role":"user","content": f"{question1},{reviews},{question2}"}]
-    )
-    asnwer= completion['choices'][0]['message']['content'].strip()
+def sumReviews(questions:list ,reviews: str) -> str:
+    asnwer=[]
+    for question in questions :
+        completion=openai.ChatCompletion.create(
+            model="gpt-3.5-turbo-0301",
+            messages=[{"role":"user","content": f"{question},{reviews}"}]
+        )
+        resposnse= completion['choices'][0]['message']['content'].strip()
+        answer.append(resposnse)
     return asnwer
+
+
 
 def askGPT(values_list: list) -> str:
     print('asked about list')
@@ -32,6 +37,20 @@ def askGPT(values_list: list) -> str:
                 )
     asnwer= completion['choices'][0]['message']['content'].strip()
     return asnwer
+
+
+def askGPTq():
+    print('staring')
+    completion=openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "user", "content": "what is the 2 feet in cm?"},
+        {"role": "user", "content": "what is the color of the sky"}
+    ])
+    
+    return completion['choices']['message']['content']
+# [0]['message']['content']
+    
 
 
 def askGPTaboutAll(allReviews: list) -> str:

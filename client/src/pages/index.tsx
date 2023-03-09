@@ -15,7 +15,7 @@ const Home: NextPage = () => {
 
   const sendLink = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/fullScript', {
+      const response = await fetch('http://18.188.252.206:8000/fullScript', {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ question1, URL, question2 })
@@ -90,7 +90,7 @@ const Home: NextPage = () => {
             />
             <button
               onClick={() => {
-                getInfo.mutate(URL), sendLink();
+                sendLink();
               }}
               className={`shadowStuff flex h-[40px] w-[130px] items-center justify-center gap-2 rounded-lg bg-blue ${getInfo.isLoading ? "text-sm" : "text-lg"
                 } font-bold text-white`}

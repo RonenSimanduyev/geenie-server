@@ -6,7 +6,7 @@ import time
 from AmazonReviewsAnalysis import reviewAnalysis
 from scrapper import runScrapperScript
 from uploadToSheets import uploadToSheets,remove_scrapper_result
-from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc,askGPTaboutAll,askGPT
+from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc,askGPTaboutAll,askGPT,askGPTq
 import asyncio
 import pandas as pd
 import requests
@@ -61,40 +61,38 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
     # list to keep the response from the 2 analysis
     answer=[]
     data = await request.json()
-    # getting the first part of the question
-    question1 = data.get('question1')
+    # getting a question list
+    questions = data.get('questions')
     # getting the url from google drive
     drive_url = data.get('URL')
-    # getting the second part of the question 
-    question2 = data.get('question2')
     # activate a funciton that scrape the reviews of the product and upload it to the google drive
+    
     
     #@@ drive_url,filename = await scrape_and_drive(url) @@
    
-        
-    # takes the url dounloadwind the scv and naming it as the asin name
+    # takes the url download the scv and naming it as the asin name
     filename = downloadCSV(drive_url)
     
      # first analysis of the reviews by the csv
-
     try:
-        print('start analysis 1')
-        analysis1=reviewAnalysis(filename)
+        print('start gpt analysis')
+        analysis1 = await ask_about_reviews(question1 ,drive_url ,question2)
+        # seperate the 2 analysis 
         answer.append(analysis1)
     except:
         print('failed to load analysis 1')
-    # second analysis by gpt that get url of the reviews
     try:
         print('start analysis 2')
-        analysis2 = await ask_about_reviews(question1 ,drive_url ,question2)
-        # seperate the 2 analysis 
-        answer.append('@@@@@@@@@@@@@@@@')
+        analysis2=reviewAnalysis(filename)
         answer.append(analysis2)
     except:
-        print('failed to load analysis 2')
+        print('failed to load analysis 12')
+    # second analysis by gpt that get url of the reviews
+
     # remove the scrapper result from the root folder
     remove_scrapper_result(filename)
     # return the answer to the front
+    json_str = json.dumps(answer)
     return answer
 
 
@@ -130,3 +128,6 @@ async def ask_based_on_tos():
     return response
 
 
+@app.post('/askSUm')
+async def ask_based_on_tos():
+    print(askGPTq())
