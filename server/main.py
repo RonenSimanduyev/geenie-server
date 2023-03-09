@@ -46,22 +46,29 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request):
     # getting the second part of the question 
     question2 = data.get('question2')
     # activate a funciton that scrape the reviews of the product and upload it to the google drive
-    drive_url,filename = await scrape_and_drive(url)
+   
+    # drive_url,filename = await scrape_and_drive(url)
+   
     # first analysis of the reviews by the csv
+    
+    filename='B000I82DTU.csv'
+    drive_url='https://drive.google.com/file/d/1kcco89c4g-_ot5T8GGWVWiNTka9zcwxc/view?usp=share_link'
     try:
+        print('start analysis 1')
         analysis1=reviewAnalysis(filename)
         answer.append(analysis1)
     except:
-        pass
+        print('failed to load analysis 1')
     # second analysis by gpt that get url of the reviews
     try:
+        print('start analysis 2')
         analysis2 = await ask_about_reviews(question1 ,drive_url ,question2)
         answer.append('@@@@@@@@@@@@@@@@')
         answer.append(analysis2)
     except:
-        pass
+        print('failed to load analysis 2')
     # remove the scrapper result from the root folder
-    remove_scrapper_result(filename)
+    # remove_scrapper_result(filename)
     # return the answer to the front
     return answer
 
