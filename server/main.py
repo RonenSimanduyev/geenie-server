@@ -11,8 +11,8 @@ import asyncio
 import pandas as pd
 import requests
 import gdown
-
-
+import json
+from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
@@ -33,8 +33,8 @@ async def scrape_and_drive(URL: str):
     return drive_url,filename
 
 
-async def ask_about_reviews(question1:str ,drive_url: str,question2:str) -> str:
-    response = sumReviews(question1 ,drive_url ,question2)
+async def ask_about_reviews(questions:str ,drive_url: str,) -> str:
+    response = sumReviews(questions ,drive_url )
     print(response)
     return response
 
@@ -92,8 +92,8 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
     # remove the scrapper result from the root folder
     remove_scrapper_result(filename)
     # return the answer to the front
-    json_str = json.dumps(answer)
-    return answer
+    # return answer
+    return JSONResponse(content=json.dumps(answer))
 
 
 @app.post('/askBasedOnTOS')

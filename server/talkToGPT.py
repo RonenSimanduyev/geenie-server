@@ -1,6 +1,6 @@
 import openai
 import os
-API_Key = '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'
+API_Key = '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'
 amazon_TOS_doc='https://docs.google.com/document/d/11XvCw-akyBSwKWoMSb5abif-dT7KGGGRUSV39Hc1JXc/edit?usp=sharing'
 openai.api_key=API_Key
 
@@ -17,16 +17,19 @@ def askAboutTOS(question: str, regulations: str) -> str:
 
 
 def sumReviews(questions:list ,drive_url: str) -> str:
-    asnwer=[]
+    answer=[]
+    print('entered sum reviews')
+    # questions.split('?')
+    print(questions[0],questions[1])
+    print('entered the functoin')
     for question in questions :
         completion=openai.ChatCompletion.create(
             model="gpt-3.5-turbo-0301",
             messages=[{"role":"user","content": f"{question},{drive_url}"}]
         )
-        resposnse= completion['choices'][0]['message']['content'].strip()
-        answer.append(resposnse)
-    return asnwer
-
+        response = completion['choices'][0]['message']['content'].strip()
+        answer.append(response)
+    return answer
 
 
 def askGPT(values_list: list) -> str:
