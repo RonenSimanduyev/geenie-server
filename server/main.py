@@ -34,7 +34,8 @@ async def scrape_and_drive(URL: str):
 
 
 async def ask_about_reviews(questions:str ) -> str:
-    response = sumReviews(questions )
+    print('entered ask about reviwes')
+    response = sumReviews(questions)
     print(response)
     return response
 
