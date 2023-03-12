@@ -42,24 +42,7 @@ def reviewAnalysis(fileName):
         missing_df = pd.DataFrame(missing_df)
         return missing_df
 
-    def check_df(df, head=5, tail=5):
-        print("Shape")
-        print("rows: ", df.shape[0])
-        print("columns: ",df.shape[1])
-        print("------------------------------")
-        print("Types")
-        print(df.dtypes)
-        print("")
-        print("------------------------------")
-        print(missing_values_analysis(df))
-        print("------------------------------")
-        print("duplicated values")
-        print(df.duplicated().sum())
-        print("------------------------------")
-        print("quantiles")
-        print(df.quantile([0,0.05,0.5,0.95,0.99,1]).T)
 
-    check_df(df)
 
     #unique values analysis
     def check_class(df):
@@ -76,14 +59,8 @@ def reviewAnalysis(fileName):
     df = df.dropna(subset=["Body"])
     df = df.drop_duplicates(subset=["Body"])
 
-
-
-
     #converting to correct types
     df["Body"] = df["Body"].astype(str)
-
-
-
 
     #using regex to clean data of commas and numbers and convert all data to lowercase & to normal form of the word, & remove stopwords
 
@@ -92,14 +69,9 @@ def reviewAnalysis(fileName):
     df["Body"] = df["Body"].str.lower()
     df.head(5)
 
-
     #removing stopwords
     import nltk
     nltk.download('stopwords')
-
-
-
-
 
     stop_words = stopwords.words("english")
     rt = lambda x: re.sub(r'\b({})\b\s+'.format('|'.join(stop_words)),"",str(x))
@@ -108,16 +80,9 @@ def reviewAnalysis(fileName):
     df["Body"] = df["Body"].map(rt)
 
 
-
     nltk.download('wordnet')
 
-
-
-
     nltk.download('punkt')
-
-
-
 
     #lemmantizing words
     import nltk
@@ -161,13 +126,11 @@ def reviewAnalysis(fileName):
 
 
     tf_idf_res = tf_idf(df['Body'],2,3)
-    tf_idf_res
 
 
     tf_idf_res.sort_values(by=["score"],ascending=False)
     tf_idf_res = tf_idf_res.reset_index()
     tf_idf_res = tf_idf_res.drop(["index"],axis=1)
-    tf_idf_res.head(50)
 
 
 
@@ -175,11 +138,8 @@ def reviewAnalysis(fileName):
 
     tf_idf_res = tf_idf_res.reset_index()
     tf_idf_res = tf_idf_res.drop(["index"],axis=1)
-    tf_idf_res
-
-
+    
     # filter similar topics
-
 
     #similar uses sequence matcher to find how similar strings are to each other
     #then if they are similar, filters
