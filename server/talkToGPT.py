@@ -16,16 +16,13 @@ def askAboutTOS(question: str, regulations: str) -> str:
 
 
 
-def sumReviews(questions:list ,drive_url: str) -> str:
+def sumReviews(questions:list) -> str:
     answer=[]
-    print('entered sum reviews')
-    # questions.split('?')
-    print(questions[0],questions[1])
-    print('entered the functoin')
+
     for question in questions :
         completion=openai.ChatCompletion.create(
             model="gpt-3.5-turbo-0301",
-            messages=[{"role":"user","content": f"{question},{drive_url}"}]
+            messages=[{"role":"user","content": f"{question}"}]
         )
         response = completion['choices'][0]['message']['content'].strip()
         answer.append(response)

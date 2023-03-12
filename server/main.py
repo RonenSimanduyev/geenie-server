@@ -33,8 +33,8 @@ async def scrape_and_drive(URL: str):
     return drive_url,filename
 
 
-async def ask_about_reviews(questions:str ,drive_url: str,) -> str:
-    response = sumReviews(questions ,drive_url )
+async def ask_about_reviews(questions:str ) -> str:
+    response = sumReviews(questions )
     print(response)
     return response
 
@@ -76,7 +76,7 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
      # first analysis of the reviews by the csv
     try:
         print('start gpt analysis')
-        analysis1 = await ask_about_reviews(questions ,drive_url )
+        analysis1 = await ask_about_reviews(questions)
         # seperate the 2 analysis 
         answer.append(analysis1)
     except:
