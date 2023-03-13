@@ -3,17 +3,19 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
 import time
-from AmazonReviewsAnalysis import reviewAnalysis
+# from AmazonReviewsAnalysis import reviewAnalysis
 from scrapper import runScrapperScript
 from uploadToSheets import uploadToSheets,remove_scrapper_result
-from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc,askGPTaboutAll,askGPT,askGPTq
+from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc,askGPTaboutAll,askGPT
 import asyncio
 import pandas as pd
 import requests
 import gdown
 import json
 from fastapi.responses import JSONResponse
-
+from RonenAnalysis import analyze_reviews_csv
+import csv
+import os
 
 app = FastAPI()
 
@@ -39,62 +41,82 @@ async def ask_about_reviews(questions:str ) -> str:
     print(response)
     return response
 
-
 def downloadCSV(drive_url: str):
     url = drive_url
     # Split the URL into parts using '/' as separator
     url_parts = url.split('/')
     # Get the part of the URL that contains the file ID
     file_id = url_parts[5]
-    # Get the file name by making a request to the Google Drive API
-    response = requests.get(f"https://drive.google.com/uc?export=download&id={file_id}")
-    asin = response.headers['Content-Disposition'].split(';')[1].split('filename=')[1].strip('"')
+    # Download the file and get the file name
+    response = gdown.download(f"https://drive.google.com/uc?id={file_id}&export=download", quiet=False,fuzzy=True)
+    # Remove the .json extension from the file name
+    file_name = os.path.splitext(response)[0]
+    # Convert the JSON file to a CSV file
+    with open(response, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    with open(f"{file_name}.csv", "w", newline='', encoding='utf-8-sig') as csvfile:
+        writer = csv.writer(csvfile)
+        # Write the header row
+        writer.writerow(data[0].keys())
+        # Write the data rows
+        for item in data:
+            writer.writerow(item.values())
+    # Delete the downloaded JSON file
+    os.remove(response)
+    return f"{file_name}.csv"
 
-    print('started download for csv')
-    url = drive_url
-    fileName = f'{asin}.csv'
-    gdown.download(url, fileName, quiet=False,fuzzy=True)
-    return fileName
-    
+
+
+
 
 @app.post('/fullScript')
 async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
+    start_time = time.time()
     # list to keep the response from the 2 analysis
     answer=[]
     data = await request.json()
     # getting a question list
     questions = data.get('questions')
     # getting the url from google drive
+    
     drive_url = data.get('URL')
     # activate a funciton that scrape the reviews of the product and upload it to the google drive
-    
-    
     #@@ drive_url,filename = await scrape_and_drive(url) @@
    
     # takes the url download the scv and naming it as the asin name
     filename = downloadCSV(drive_url)
     
-     # first analysis of the reviews by the csv
+     # first analysis of the reviews by gpt
+    gpt_time = time.time()
+
     try:
         print('start gpt analysis')
-        analysis1 = await ask_about_reviews(questions)
-        # seperate the 2 analysis 
-        answer.append(analysis1)
+        analysisGPT = await sumReviews(questions)
+        answer.append(analysisGPT)
     except:
         print('failed to load analysis 1')
+    gpt_end_time = time.time()
+    print(f'took gpt{gpt_end_time - gpt_time}')
+    analysis_time = time.time()
+    # seconde analysis by script
     try:
         print('start analysis 2')
-        analysis2=reviewAnalysis(filename)
-        answer.append(analysis2)
+        analysis_sentiment=analyze_reviews_csv(filename)
+        answer.append(analysis_sentiment)
     except:
         print('failed to load analysis 12')
-    # second analysis by gpt that get url of the reviews
-
+    end_analysis_time = time.time()
+    print(end_analysis_time - analysis_time )
     # remove the scrapper result from the root folder
     remove_scrapper_result(filename)
     # return the answer to the front
     # return answer
+    end_time = time.time()
+    elapsed_time = end_time - start_time
     return JSONResponse(content=json.dumps(answer))
+
+
+
 
 
 @app.post('/askBasedOnTOS')
@@ -108,27 +130,18 @@ async def ask_based_on_tos(request: Request):
     return response, f'that took {s} seconds'
 
 
+
 @app.post('/askGPT')
-async def ask_based_on_tos():
+async def askHim():
     print('started')
-    
     allReviews= []
     values_list = []
-    df = pd.read_csv('B00R3Z49G6.csv')
-    for i in range(1, len(df),20):
-        # Extract the values from the fourth column for the current batch of rows
-        values = df.iloc[i:i+20, 3].values.tolist()
-        # Add the values to the list
-        values_list.extend(values)
-        response = askGPT(values_list)
-        allReviews.append(response)
-        values_list=[]
-        values=[]
-        print(i)
-    response = askGPTaboutAll(allReviews)
+    df = pd.read_csv('convertcsv.csv')
+    print(len(df))
+    # Extract the values from the fourth column for the current batch of rows
+    values = df.iloc[0:, 3].values.tolist()
+     # Add the values to the list
+    values_list.extend(values)
+    response = askGPT(values_list)
+    response = askGPTaboutAll(response)
     return response
-
-
-@app.post('/askSUm')
-async def ask_based_on_tos():
-    print(askGPTq())
