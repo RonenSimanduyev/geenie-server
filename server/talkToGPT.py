@@ -1,6 +1,6 @@
 import openai
 import os
-API_Key = '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'
+API_Key = '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'
 amazon_TOS_doc='https://docs.google.com/document/d/11XvCw-akyBSwKWoMSb5abif-dT7KGGGRUSV39Hc1JXc/edit?usp=sharing'
 openai.api_key=API_Key
 
@@ -54,14 +54,23 @@ def askGPT(values_list: list) -> str:
     print('asked about list')
     fullAnswer=[]
     completion=openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0301",
+        model="gpt-3.5-turbo",
         messages=[{
-                   "role":"user","content": f"sumarize these reviews {values_list[0:30]}",
-                   "role":"user","content": f"sumarize these reviews {values_list[30:60]}",
-                   "role":"user","content": f"sumarize these reviews {values_list[30:60]}",
-                   "role":"user","content": f"sumarize these reviews {values_list[60:90]}",
-                   "role":"user","content": f"sumarize these reviews {values_list[120:150]}",
-                   "role":"user","content": f"sumarize these reviews {values_list[150:180]}",}]
+            
+                    "role":"user","content": f"sumarize these reviews {values_list[0:30]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[30:60]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[30:60]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[60:90]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[120:150]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[150:180]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[180:210]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[210:240]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[240:270]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[270:300]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[330:360]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[360:390]}",
+                    "role":"user","content": f"sumarize these reviews {values_list[390:400]}",
+                   }]
                 )
     return completion
 

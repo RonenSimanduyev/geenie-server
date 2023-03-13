@@ -134,6 +134,8 @@ async def ask_based_on_tos(request: Request):
 @app.post('/askGPT')
 async def askHim():
     print('started')
+    gpt_time = time.time()
+
     allReviews= []
     values_list = []
     df = pd.read_csv('convertcsv.csv')
@@ -144,4 +146,6 @@ async def askHim():
     values_list.extend(values)
     response = askGPT(values_list)
     response = askGPTaboutAll(response)
+    gpt_end_time = time.time()
+    print(gpt_end_time - gpt_time)
     return response
