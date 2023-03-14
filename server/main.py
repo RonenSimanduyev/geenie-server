@@ -68,6 +68,20 @@ def downloadCSV(drive_url: str):
 
 
 
+async def sendToGPT(filename):
+    print('started')
+    allReviews= []
+    values_list = []
+    df = pd.read_csv(f'{filename}')
+    print(len(df))
+    # Extract the values from the fourth column for the current batch of rows
+    values = df.iloc[0:, 3].values.tolist()
+     # Add the values to the list
+    values_list.extend(values)
+    response = askGPT(values_list)
+    response = askGPTaboutAll(response)
+    return response
+
 
 @app.post('/fullScript')
 async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
@@ -85,18 +99,18 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
    
     # takes the url download the scv and naming it as the asin name
     filename = downloadCSV(drive_url)
-    
+    print(filename)
      # first analysis of the reviews by gpt
     gpt_time = time.time()
 
     try:
         print('start gpt analysis')
-        analysisGPT = await sumReviews(questions)
+        analysisGPT = await sendToGPT(filename)
         answer.append(analysisGPT)
     except:
         print('failed to load analysis 1')
     gpt_end_time = time.time()
-    print(f'took gpt{gpt_end_time - gpt_time}')
+    print(f'took gpt {gpt_end_time - gpt_time}')
     analysis_time = time.time()
     # seconde analysis by script
     try:
@@ -108,7 +122,7 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
     end_analysis_time = time.time()
     print(end_analysis_time - analysis_time )
     # remove the scrapper result from the root folder
-    remove_scrapper_result(filename)
+    # remove_scrapper_result(filename)
     # return the answer to the front
     # return answer
     end_time = time.time()
@@ -128,24 +142,3 @@ async def ask_based_on_tos(request: Request):
     print(response)
     s=(time()-t)
     return response, f'that took {s} seconds'
-
-
-
-@app.post('/askGPT')
-async def askHim():
-    print('started')
-    gpt_time = time.time()
-
-    allReviews= []
-    values_list = []
-    df = pd.read_csv('convertcsv.csv')
-    print(len(df))
-    # Extract the values from the fourth column for the current batch of rows
-    values = df.iloc[0:, 3].values.tolist()
-     # Add the values to the list
-    values_list.extend(values)
-    response = askGPT(values_list)
-    response = askGPTaboutAll(response)
-    gpt_end_time = time.time()
-    print(gpt_end_time - gpt_time)
-    return response
