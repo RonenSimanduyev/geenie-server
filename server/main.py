@@ -87,7 +87,7 @@ async def sendToGPT(filename):
 async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
     start_time = time.time()
     # list to keep the response from the 2 analysis
-    answer=[]
+    endList=[]
     data = await request.json()
     # getting a question list
     questions = data.get('questions')
@@ -106,7 +106,7 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
     try:
         print('start gpt analysis')
         analysisGPT = await sendToGPT(filename)
-        answer.append(analysisGPT)
+        endList.append(analysisGPT)
     except:
         print('failed to load analysis 1')
     gpt_end_time = time.time()
@@ -116,7 +116,7 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
     try:
         print('start analysis 2')
         analysis_sentiment=analyze_reviews_csv(filename)
-        answer.append(analysis_sentiment)
+        endList.append(analysis_sentiment)
     except:
         print('failed to load analysis 12')
     end_analysis_time = time.time()
@@ -127,7 +127,7 @@ async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
     # return answer
     end_time = time.time()
     elapsed_time = end_time - start_time
-    return JSONResponse(content=json.dumps(answer))
+    return JSONResponse(content=json.dumps(endList))
 
 
 
