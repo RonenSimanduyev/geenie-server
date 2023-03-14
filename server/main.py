@@ -90,12 +90,14 @@ async def analyse_reviews(request: Request)->list:
     endList=[]
     data = await request.json()
     # getting a question list
-    questions = data.get('questions')
+    questions = data.get('prompt')
     try:
         #if there is a google drive link we are downloading the file
-        drive_url = data.get('URL')
-        print('got url')
+        drive_url = data.get('URL')    
+        print(f'the url {URL}')    
         filename = downloadCSV(drive_url)
+        print('got url')
+
         print(filename)
         # anlysing the data with gpt
         parts = questions.split('$')
