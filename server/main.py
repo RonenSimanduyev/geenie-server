@@ -94,7 +94,7 @@ async def analyse_reviews(request: Request)->list:
     try:
         #if there is a google drive link we are downloading the file
         drive_url = data.get('URL')    
-        print(f'the url {URL}')    
+        print(f'the url {drive_url}')    
         filename = downloadCSV(drive_url)
         print('got url')
 
