@@ -13,7 +13,7 @@ import requests
 import gdown
 import json
 from fastapi.responses import JSONResponse
-from RonenAnalysis import analyze_reviews_csv
+from sentiment_Analysis import analyze_reviews_csv
 import csv
 import os
 
@@ -142,3 +142,10 @@ async def ask_based_on_tos(request: Request):
     print(response)
     s=(time()-t)
     return response, f'that took {s} seconds'
+
+
+@app.post('/spam')
+async def ask_based_on_tos():
+    filename='B07CRG94G3.csv'
+    analysis_sentiment=analyze_reviews_csv(filename)
+    return analysis_sentiment
