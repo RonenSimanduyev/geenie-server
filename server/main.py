@@ -119,7 +119,7 @@ async def analyse_reviews(request: Request)->list:
         except:
             print('failed to load analysis 12')
         remove_scrapper_result(filename)
-
+        print(endList)
         return JSONResponse(content=json.dumps(endList))
 
     except:
