@@ -68,7 +68,7 @@ def downloadCSV(drive_url: str):
 
 
 
-async def sendToGPT(filename):
+async def sendToGPT(filename,before,after):
     print('started')
     allReviews= []
     values_list = []
@@ -79,7 +79,7 @@ async def sendToGPT(filename):
      # Add the values to the list
     values_list.extend(values)
     response = askGPTchunks(values_list)
-    response = askGPTaboutAll(response)
+    response = askGPTaboutAll(before,response,after)
     return response
 
 
@@ -98,12 +98,13 @@ async def analyse_reviews(request: Request)->list:
         filename = downloadCSV(drive_url)
         print(filename)
         # anlysing the data with gpt
-        questions.split("${formattedReviews.join(' , ')}")
-        print(questions)
-        
+        parts = questions.split('$')
+        before = parts[0]
+        after = parts[1].split('}')[1]
+
         try:
             print('start gpt analysis')
-            analysisGPT = await sendToGPT(filename)
+            analysisGPT = await sendToGPT(filename,before,after)
             endList.append(analysisGPT)
         except:
             print('failed to load analysis 1')
@@ -115,7 +116,7 @@ async def analyse_reviews(request: Request)->list:
             endList.append(analysis_sentiment)
         except:
             print('failed to load analysis 12')
-        # remove_scrapper_result(filename)
+        remove_scrapper_result(filename)
 
         return JSONResponse(content=json.dumps(endList))
 

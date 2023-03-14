@@ -1,6 +1,6 @@
 import openai
 import os
-API_Key = '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'
+API_Key = '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'
 amazon_TOS_doc='https://docs.google.com/document/d/11XvCw-akyBSwKWoMSb5abif-dT7KGGGRUSV39Hc1JXc/edit?usp=sharing'
 openai.api_key=API_Key
 
@@ -57,11 +57,11 @@ def askGPTchunks(values_list: list) -> str:
     
 
 
-def askGPTaboutAll(completion: list) -> str:
+def askGPTaboutAll(before:str ,completion: list,after:str) -> str:
     print('asking about all')
     completion=openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0301",
-        messages=[{"role":"user","content": f"please analyze over 400 customer reviews for a product on Amazon from this list {completion} 1.Can you provide a summary of all complaints with corresponding percentages in 20 bullets by topic? 2.Can you provide insights into the overall sentiment of the reviews, the most commonly mentioned positive and negative aspects of the product, and any recurring themes or issues mentioned in the reviews?3.Can you identify any correlations or relationships between variables in the data, such as the correlation between the price of the product and the overall customer satisfaction?4.Can you provide visualizations of the data in the form of graphs or charts to help illustrate the insights and trends identified in the analysis?5.Can you please write all common themes negative, positive with corresponding percentages? 6.Can you write HTML code of a pie chart that can be used to show the proportion of each complaint? Each slice of the pie would represent a specific complaint and its corresponding percentage.7. Based on your analysis of the consumer reviews, can you write the common themes that emerged from the feedback? 8. Use descriptive language for all answers"}]
+        messages=[{"role":"user","content": f"{before} {completion} {after}"}]
     )
     
     asnwer= completion['choices'][0]['message']['content'].strip()
