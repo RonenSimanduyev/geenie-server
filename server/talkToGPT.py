@@ -1,6 +1,6 @@
 import openai
 import os
-API_Key = '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'
+API_Key = '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'
 amazon_TOS_doc='https://docs.google.com/document/d/11XvCw-akyBSwKWoMSb5abif-dT7KGGGRUSV39Hc1JXc/edit?usp=sharing'
 openai.api_key=API_Key
 
@@ -13,26 +13,6 @@ def askAboutTOS(question: str, regulations: str) -> str:
     )
     message = response.choices[0].text
     return message
-
-
-
-# def sumReviews(questions:list) -> str:
-#     answer=[]
-#     print(questions)
-#     print('entered sum reviews')
-#     for question in questions :
-#         print(f'{question}')
-#         completion=openai.ChatCompletion.create(
-#             model="gpt-3.5-turbo",
-#             max_tokens=150,
-#             messages=[{"role":"user","content": f"{question}"}]
-#         )
-#         print('after question')
-#         response = completion['choices'][0]['message']['content'].strip()
-#         answer.append(response)
-#     return answer
-
-
 
 
 
@@ -50,9 +30,10 @@ def sumReviews(questions:list) -> str:
         answer.append(message)
     return answer
 
-def askGPT(values_list: list) -> str:
+
+
+def askGPTchunks(values_list: list) -> str:
     print('asked about list')
-    fullAnswer=[]
     completion=openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[{
@@ -87,6 +68,17 @@ def askGPTaboutAll(completion: list) -> str:
     return asnwer
 
 
+def askGPTdirectly(questions: str) -> str:
+    print('asked directly')
+    fullAnswer=[]
+    completion=openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{
+                  
+                    "role":"user","content": f"{questions}"}]
+                )
+    asnwer= completion['choices'][0]['message']['content'].strip()
+    return asnwer
 
 
 

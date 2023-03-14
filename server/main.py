@@ -6,7 +6,7 @@ import time
 # from AmazonReviewsAnalysis import reviewAnalysis
 from scrapper import runScrapperScript
 from uploadToSheets import uploadToSheets,remove_scrapper_result
-from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc,askGPTaboutAll,askGPT
+from talkToGPT import sumReviews, askAboutTOS, amazon_TOS_doc,askGPTaboutAll,askGPTdirectly,askGPTchunks
 import asyncio
 import pandas as pd
 import requests
@@ -78,56 +78,52 @@ async def sendToGPT(filename):
     values = df.iloc[0:, 3].values.tolist()
      # Add the values to the list
     values_list.extend(values)
-    response = askGPT(values_list)
+    response = askGPTchunks(values_list)
     response = askGPTaboutAll(response)
     return response
 
 
 @app.post('/fullScript')
-async def scrape_and_drive_and_ask_about_reviews(request: Request)->list:
+async def analyse_reviews(request: Request)->list:
     start_time = time.time()
     # list to keep the response from the 2 analysis
     endList=[]
     data = await request.json()
     # getting a question list
     questions = data.get('questions')
-    # getting the url from google drive
-    
-    drive_url = data.get('URL')
-    # activate a funciton that scrape the reviews of the product and upload it to the google drive
-    #@@ drive_url,filename = await scrape_and_drive(url) @@
-   
-    # takes the url download the scv and naming it as the asin name
-    filename = downloadCSV(drive_url)
-    print(filename)
-     # first analysis of the reviews by gpt
-    gpt_time = time.time()
+    try:
+        #if there is a google drive link we are downloading the file
+        drive_url = data.get('URL')
+        print('got url')
+        filename = downloadCSV(drive_url)
+        print(filename)
+        # anlysing the data with gpt
+        questions.split("${formattedReviews.join(' , ')}")
+        print(questions)
+        
+        try:
+            print('start gpt analysis')
+            analysisGPT = await sendToGPT(filename)
+            endList.append(analysisGPT)
+        except:
+            print('failed to load analysis 1')
+        
+        # analysing with script
+        try:
+            print('start analysis 2')
+            analysis_sentiment=analyze_reviews_csv(filename)
+            endList.append(analysis_sentiment)
+        except:
+            print('failed to load analysis 12')
+        # remove_scrapper_result(filename)
 
-    try:
-        print('start gpt analysis')
-        analysisGPT = await sendToGPT(filename)
+        return JSONResponse(content=json.dumps(endList))
+
+    except:
+        print('no url')
+        analysisGPT = askGPTdirectly(questions)
         endList.append(analysisGPT)
-    except:
-        print('failed to load analysis 1')
-    gpt_end_time = time.time()
-    print(f'took gpt {gpt_end_time - gpt_time}')
-    analysis_time = time.time()
-    # seconde analysis by script
-    try:
-        print('start analysis 2')
-        analysis_sentiment=analyze_reviews_csv(filename)
-        endList.append(analysis_sentiment)
-    except:
-        print('failed to load analysis 12')
-    end_analysis_time = time.time()
-    print(end_analysis_time - analysis_time )
-    # remove the scrapper result from the root folder
-    # remove_scrapper_result(filename)
-    # return the answer to the front
-    # return answer
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    return JSONResponse(content=json.dumps(endList))
+        return JSONResponse(content=json.dumps(endList))
 
 
 
@@ -145,7 +141,22 @@ async def ask_based_on_tos(request: Request):
 
 
 @app.post('/spam')
-async def ask_based_on_tos():
-    filename='B07CRG94G3.csv'
-    analysis_sentiment=analyze_reviews_csv(filename)
-    return analysis_sentiment
+async def spam():
+    print('started')
+    filename=downloadCSV('https://drive.google.com/file/d/1OFoCVoGqmrALRm7PI-hk6C0exdnex6nX/view?usp=sharing')
+    start=time.time()
+    allReviews= []
+    values_list = []
+    df = pd.read_csv(f'{filename}')
+    print(len(df))
+    # Extract the values from the fourth column for the current batch of rows
+    values = df.iloc[0:, 3].values.tolist()
+     # Add the values to the list
+    values_list.extend(values)
+    response = sumReviews(values_list)
+    # response = askGPTaboutAll(response)
+    end=time.time()
+    print(end-start)
+    remove_scrapper_result(filename)
+
+    return response
