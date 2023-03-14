@@ -120,7 +120,7 @@ async def analyse_reviews(request: Request)->list:
             print('failed to load analysis 12')
         remove_scrapper_result(filename)
         print(endList)
-        return JSONResponse(content=json.dumps(endList))
+        return endList
 
     except:
         print('no url')
@@ -128,9 +128,7 @@ async def analyse_reviews(request: Request)->list:
         analysisGPT = askGPTdirectly(questions)
         endList.append(analysisGPT)
         print(endList)
-        jsonAnswer=JSONResponse(content=json.dumps(endList))
-        print(jsonAnswer)
-        return JSONResponse(content=json.dumps(endList))
+        return endList
 
 
 
