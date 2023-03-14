@@ -128,6 +128,7 @@ async def analyse_reviews(request: Request)->list:
         analysisGPT = askGPTdirectly(questions)
         endList.append(analysisGPT)
         print(endList)
+        print( JSONResponse(content=json.dumps(endList)))
         return JSONResponse(content=json.dumps(endList))
 
 
