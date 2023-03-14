@@ -121,8 +121,10 @@ async def analyse_reviews(request: Request)->list:
 
     except:
         print('no url')
+        print(questions)
         analysisGPT = askGPTdirectly(questions)
         endList.append(analysisGPT)
+        print(endList)
         return JSONResponse(content=json.dumps(endList))
 
 
